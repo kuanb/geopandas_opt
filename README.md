@@ -14,7 +14,7 @@ In the included example Pythons script, I load in a dataset containing geometrie
 
 Presently, the operation performs two tasks intended to speed up the operation. First, it creates a spatial index from the GeoDataFrame based on its `geometry` column. Second, it preprocesses a buffer column.
 
-The `summarize` operation applied to each row performs a comparative buffer (buffering the reference geometry and getting all intersections to that, and then doing the inverse and buffering the other geometries and seeing if the normal geometry intersects in that situation). This methodology replicates the same for `ST_DWithin` from PostGIS (reference in their repo: https://github.com/postgis/postgis/blob/c0998a4e638048196a6abfab1504eca6b1a1462f/postgis/geography.sql.in#L550).
+The `summarize` operation applied to each row performs a comparative buffer (buffering the reference geometry and getting all intersections to that, and then doing the inverse and buffering the other geometries and seeing if the normal geometry intersects in that situation). This methodology replicates the same for `ST_DWithin` from PostGIS (reference in their [repo](https://github.com/postgis/postgis/blob/c0998a4e638048196a6abfab1504eca6b1a1462f/postgis/geography.sql.in#L550)).
 
 ### Results
 Running `run.py` will result in the following output (time in seconds before the colon):
@@ -44,4 +44,4 @@ Note: Times will vary on each run through, naturally.
 The `apply` operation takes a long time; about 9.4 minutes. That's nearly 0.2 seconds per row, which seems terribly slow. You can imagine how a series of spatial operations can quickly amount to cumbersome execution times.
 
 ## Question
-What, if any, additional optimizations could be used to make geometric operations faster in Python? For example, I've found additional prepartion steps that could potentially be used, such as `shapely.prepared()` (and asked about them on SO: http://stackoverflow.com/questions/42232601/r-tree-v-shapely-prepared-when-comparing-geometries), but from what I can tell they provide no substantive improvements over what is already achieved via the spatial index.
+What, if any, additional optimizations could be used to make geometric operations faster in Python? For example, I've found additional prepartion steps that could potentially be used, such as `shapely.prepared()` (and [asked about them on SO](http://stackoverflow.com/questions/42232601/r-tree-v-shapely-prepared-when-comparing-geometries)), but from what I can tell they provide no substantive improvements over what is already achieved via the spatial index.
