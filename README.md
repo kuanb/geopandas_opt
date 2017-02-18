@@ -45,3 +45,6 @@ The `apply` operation takes a long time; about 9.4 minutes. That's nearly 0.2 se
 
 ## Question
 What, if any, additional optimizations could be used to make geometric operations faster in Python? For example, I've found additional prepartion steps that could potentially be used, such as `shapely.prepared()` (and asked about them on SO: http://stackoverflow.com/questions/42232601/r-tree-v-shapely-prepared-when-comparing-geometries), but from what I can tell they provide no substantive improvements over what is already achieved via the spatial index.
+
+## A Final Note
+Tom Augspurger [makes a strong case](https://tomaugspurger.github.io/modern-4-performance.html) for vectorization and the utilization of Numpy list comprehension in lieu of the costly `.apply()` operation. I'm very open to exploring how to operationalize this concept with large datasets but have concerns over its feasibility with larger datasets. Our example is similar to his "origin-destination" matrix calculation. With this methodology, we would need to create a subindex of each of the 30k geometries for each "origin" index. Dealing with a matrix that is `(n rows)^2` long becomes unreasonable for in-memory operations and brings into question how "really" operational the vector methodology is.
