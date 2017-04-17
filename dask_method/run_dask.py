@@ -45,7 +45,7 @@ for subset_length in length_options:
     gdf = gdf.set_index('id')
 
     # we'll do an aggregation based off of an arbitrary buffer distance
-    gdf['buffer'] = gdf['geometry'].buffer(500)
+    gdf['buffer'] = gdf['geometry'].buffer(5000)
 
     print('\tFinished initial set up steps. Running Dask operation...')
 
