@@ -14,7 +14,7 @@ def log(message):
 
 
 # load in example geometry data
-filepath = './example_geometries.csv'
+filepath = '../example_geometries.csv'
 init_df = pd.read_csv(filepath)
 
 
