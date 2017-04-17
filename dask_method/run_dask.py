@@ -1,5 +1,5 @@
 import os, sys, csv, time
-from dask import dataframe as dd
+import dask
 import geopandas as gpd
 import pandas as pd
 from shapely.wkt import loads
@@ -22,6 +22,9 @@ USE_MULTIPROCESSING = int(os.getenv('mproc', 0))
 if USE_MULTIPROCESSING == 1:
     print('INFO: Setting multiprocessing ON.')
     dask.set_options(get=dask.multiprocessing.get)
+
+# set short var name for dask dataframe
+dd = dask.dataframe
 
 length_options = [500, 1000, 5000, 10000, 20000]
 for subset_length in length_options:
