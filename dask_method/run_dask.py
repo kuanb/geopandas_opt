@@ -1,4 +1,5 @@
-import sys, csv, time
+import os, sys, csv, time
+import dask
 from dask import dataframe as dd
 import geopandas as gpd
 import pandas as pd
@@ -17,6 +18,11 @@ def log(message):
 filepath = './example_geometries.csv'
 init_df = pd.read_csv(filepath)
 
+# determine if we should use Dask multiprocessing with DataFrames
+USE_MULTIPROCESSING = int(os.getenv('mproc', 0))
+if USE_MULTIPROCESSING == 1:
+    print('INFO: Setting multiprocessing ON.')
+    dask.set_options(get=dask.multiprocessing.get)
 
 length_options = [500, 1000, 5000, 10000, 20000]
 for subset_length in length_options:
