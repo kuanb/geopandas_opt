@@ -2,7 +2,6 @@
 
 ## Results from initial 5000 unit (meter) buffer apply
 Results indicate no significant improvement when using Dask Dataframe over Pandas DataFrame. When doing a 5000 unit buffer, results were as follows below. Results below were the output when running the operation on DB2.
-
 ```
 500 row DataFrame
 4.503s: with  Dask
@@ -19,10 +18,12 @@ Results indicate no significant improvement when using Dask Dataframe over Panda
 10000 row DataFrame
 343.601s: with  Dask
 444.108s: w/out Dask
+
+20000 row DataFrame
+(did not run)
 ```
 
 Meanwhile, when using a 5000 unit buffer locally, Dask appeared to deliver ~1.8x performance improvement. You can see the logs from that, below. While the above outputs were the result of running in a Docker container on DB2; the below outputs are the results of running in a virtual environment on my Macbook Pro (2015):
-
 ```
 500 row DataFrame
 3.954s: with  Dask
@@ -39,6 +40,9 @@ Meanwhile, when using a 5000 unit buffer locally, Dask appeared to deliver ~1.8x
 10000 row DataFrame
 470.869s: with  Dask
 723.688s: w/out Dask
+
+20000 row DataFrame
+(did not run)
 ```
 
 Conclusion for this section: It looks like the Dask DataFrame start to deliver performance/time savings when the subset dataframes produced through the buffer intersection get larger, which makes total sense. In the below section, we can see how a 10x reduction in buffer measure reduces the performance gains of the Dask DataFrame, causing it to perform less well when compared with the standard Pandas DataFrame.
@@ -96,6 +100,27 @@ Results are below in this case. Using multiprocessing does deliver substantive p
 20000 row DataFrame
 69.867s:  with  w/Dask
 198.125s: w/out Dask
-
 ```
 
+### Looking furher at multiprocessing
+Looks like multiprocessing is delivering some utility. Now, let's see what it looks like when dealing with larger subset dataframes. First, let's bump the buffer from 500 to 5000 units and see what the comparative performance is between a Dask DataFrame utilizing multiprocessing and a standard Pandas DataFrame.
+```
+Running on subset length: 500 rows
+2.052s: with Dask
+4.066s: w/out Dask
+
+Running on subset length: 1000 rows
+3.330s: with Dask
+10.589s: w/out Dask
+
+Running on subset length: 5000 rows
+15.977s:  with Dask
+115.935s: w/out Dask
+
+Running on subset length: 10000 rows
+32.544s: with Dask
+444.108s: w/out Dask
+
+20000 row DataFrame
+(did not run)
+```
