@@ -77,23 +77,17 @@ for subset_length in length_options:
         precise_matches = dgdf[dgdf['intersects'] == True]
         
         summed = precise_matches['value'].sum()
-        if usecompute is True:
-            pass
-            # summed = summed.compute()    
         row['sum'] = summed
         
         return row
 
     meta = dd_gdf.loc[5758].compute()
-    usecompute = True
-    dd_sums_op = dd_gdf.apply(lambda row: summarize(row, sidx, gdf.copy(), usecompute), axis=1, meta=meta)
+    dd_sums_op = dd_gdf.apply(lambda row: summarize(row, sidx, gdf.copy()), axis=1, meta=meta)
     dd_sums = dd_sums_op.compute()
 
 
     log('Finished Dask run.')
-    # print(dd_sums[['value', 'sum']].head())
 
     print('\tRunning original operation...')
-    usecompute = False
-    gdf.apply(lambda row: summarize(row, sidx, gdf.copy(), usecompute), axis=1)
+    gdf.apply(lambda row: summarize(row, sidx, gdf.copy()), axis=1)
     log('Finished normal method run.')

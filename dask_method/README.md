@@ -105,22 +105,23 @@ Results are below in this case. Using multiprocessing does deliver substantive p
 ### Looking furher at multiprocessing
 Looks like multiprocessing is delivering some utility. Now, let's see what it looks like when dealing with larger subset dataframes. First, let's bump the buffer from 500 to 5000 units and see what the comparative performance is between a Dask DataFrame utilizing multiprocessing and a standard Pandas DataFrame.
 ```
-Running on subset length: 500 rows
+500 row DataFrame
 2.052s: with Dask
 4.066s: w/out Dask
 
-Running on subset length: 1000 rows
+1000 row DataFrame
 3.330s: with Dask
 10.589s: w/out Dask
 
-Running on subset length: 5000 rows
+5000 row DataFrame
 15.977s:  with Dask
 115.935s: w/out Dask
 
-Running on subset length: 10000 rows
+10000 row DataFrame
 32.544s: with Dask
 444.108s: w/out Dask
 
 20000 row DataFrame
-(did not run)
+66.208s: with Dask
+(did not run without Dask)
 ```
