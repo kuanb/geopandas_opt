@@ -1,11 +1,14 @@
-import dask as dd
 from dask.distributed import Client
+import dask.dataframe as dd
 import geopandas as gpd
 import pandas as pd
 from shapely.wkt import loads
 
-remote_addr = ''
 filepath = './example_geometries.csv'
+buffer_dist = 1000
+
+client_db2 = Client('tcp://10.0.0.50:8786')
+print(client_db2)
 
 
 # we need a reference complete geodataframe (this is not supported by Dask)
@@ -13,41 +16,36 @@ df = pd.read_csv(filepath)
 geometries = gpd.GeoSeries(df['geometry'].map(lambda x: loads(x)))
 gdf_ref = gpd.GeoDataFrame(data=df[['id', 'value']], crs={'init': 'epsg:32154'}, geometry=geometries)
 gdf_ref.reset_index(drop=True, inplace=True)
+gdf_ref['sum'] = 0.0
 print('Working with a GeoDataFrame of length {}.'.format(len(gdf_ref.index)))
 
 
 # then we also need a dataframe representation of the same dataframe
-gdf = dd.read_csv(filepath, parse_dates=[],
-                  storage_options={'anon': True})
-gdf = client.persist(gdf)
+gdf = dd.read_csv(filepath)
+gdf = client_db2.persist(gdf)
 
 
+# function to summarize all geometries withiin a n-meter buffer
 def summarize(row):
-	# recast row geometry as such from string
-	geom = loads(row['geometry'])
-	buffered = geom.buffer(1000)
+    # recast row geometry as such from string
+    geom = row['geometry']
+    buffered = geom.buffer(buffer_dist)
 
-	# get a subset of the overall gdf
-    intersected = gdf_ref[gdf_ref.intersects(buffer)]
-    row['sum'] = intersected['value'].sum()
-    return row
-
-
-# initiatlize the client connection for dask distributed
-client_db2 = Client(remote_addr)
+    # get intersections
+    precise_matches = gdf_ref.geometry.intersects(buffered)
+    
+    return gdf_ref[precise_matches]['value'].sum()
 
 
-# optional trim step
-gdf_ref = gdf_ref.head(500)
-gdf = gdf.head(500)
+def run_summarize(id):
+    print('processing row id {}'.format(id))
+    row = gdf_ref[gdf_ref['id'] == id].squeeze()
+    return summarize(row)
 
-# two paths, first is old fashioned way
-print('calculating normal way')
-gdf_ref_2 = gdf_ref.copy()
-gdf_ref_2.apply(summarize, axis=1)
-print(gdf_ref_2.sum.values)
 
-# second is to use client and dask distributed
-print('calculating distributed way')
-gdf.apply(summarize, axis=1)
-print(gdf.sum.values)
+print('running summarize on all rows')
+gdf_ids = gdf_ref['id'].values
+sums = client_db2.map(run_summarize, gdf_ids)
+fin_sums = client_db2.gather(sums)
+print('finished; sum results below')
+print(fin_sums)
