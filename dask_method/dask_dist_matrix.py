@@ -79,5 +79,6 @@ computed = distances.compute()
 print('Computation completed.')
 
 # do something/explore the results, which is a Pandas Series
-print(computed)
+# e.g. converting to a  dictionary for use as a distance matrix
+print(computed.to_dict())
 
